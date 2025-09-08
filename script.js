@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeSystemNavigation()
   initializeSmoothScrolling()
   initializeAnimations()
+  initializeVideoInteractions()
 
   // Initialize floating elements
   const floatingElements = document.querySelector(".floating-elements")
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     floatingElements.style.transition = "opacity 0.3s ease"
   }
 
-  console.log("Enhanced Smart City Proposal website initialized with green theme")
+  console.log("Enhanced Smart City Proposal website initialized with 14 systems and video showcases")
 })
 
 // System Navigation Functionality
@@ -60,6 +61,52 @@ function initializeSystemNavigation() {
 
       animateSystemMetrics(targetSystem)
     })
+  })
+}
+
+function initializeVideoInteractions() {
+  const videoPlaceholders = document.querySelectorAll(".video-placeholder")
+
+  videoPlaceholders.forEach((placeholder) => {
+    const video = placeholder.querySelector("video")
+    const overlay = placeholder.querySelector(".video-overlay")
+
+    if (video && overlay) {
+      // Show overlay on hover
+      placeholder.addEventListener("mouseenter", () => {
+        overlay.style.opacity = "1"
+      })
+
+      placeholder.addEventListener("mouseleave", () => {
+        if (video.paused) {
+          overlay.style.opacity = "0"
+        }
+      })
+
+      // Play/pause video on click
+      overlay.addEventListener("click", () => {
+        if (video.paused) {
+          video.play()
+          overlay.style.opacity = "0"
+        } else {
+          video.pause()
+          overlay.style.opacity = "1"
+        }
+      })
+
+      // Handle video events
+      video.addEventListener("play", () => {
+        overlay.style.opacity = "0"
+      })
+
+      video.addEventListener("pause", () => {
+        overlay.style.opacity = "1"
+      })
+
+      video.addEventListener("ended", () => {
+        overlay.style.opacity = "1"
+      })
+    }
   })
 }
 
@@ -136,14 +183,18 @@ window.addEventListener("scroll", () => {
   }
 })
 
-// System Statistics Counter Animation
 function animateCounters() {
   const counters = document.querySelectorAll(".hero-stats h3")
 
   counters.forEach((counter) => {
     const target = counter.textContent
     const isPercentage = target.includes("%")
-    const numericValue = Number.parseInt(target.replace(/\D/g, ""))
+    let numericValue = Number.parseInt(target.replace(/\D/g, ""))
+
+    // Update the 14 systems counter specifically
+    if (target === "14") {
+      numericValue = 14
+    }
 
     let current = 0
     const increment = numericValue / 50
@@ -224,9 +275,25 @@ window.addEventListener("scroll", () => {
   lastScrollTop = currentScroll <= 0 ? 0 : currentScroll
 })
 
-// Add click tracking for analytics (placeholder)
 function trackSystemClick(systemName) {
-  console.log(`System clicked: ${systemName}`)
+  const systemNames = {
+    traffic: "Traffic Management",
+    lighting: "Street Lighting",
+    waste: "Waste Management",
+    water: "Water Management",
+    safety: "Public Safety",
+    healthcare: "Healthcare",
+    environment: "Environment Monitoring",
+    green: "Green Solutions",
+    pollution: "Pollution Control",
+    governance: "Transparent Governance",
+    flood: "Flood Control",
+    fire: "Fire Control",
+    emergency: "Emergency Response",
+    disaster: "Disaster Management",
+  }
+
+  console.log(`System clicked: ${systemNames[systemName] || systemName}`)
   // Add your analytics tracking code here
 }
 
@@ -246,25 +313,37 @@ function scrollToTop() {
   })
 }
 
-// Toggle systems view
 function toggleSystemsView() {
   const systemsSection = document.getElementById("systems")
   const systemContents = document.querySelectorAll(".system-content")
+  const systemButtons = document.querySelectorAll(".system-btn")
 
   // Check if all systems are visible
   const allVisible = Array.from(systemContents).every((content) => content.classList.contains("active"))
 
   if (allVisible) {
-    // Hide all except first
+    // Hide all except first (traffic management)
     systemContents.forEach((content, index) => {
       if (index > 0) content.classList.remove("active")
     })
-    document.querySelector(".system-btn").classList.add("active")
+    systemButtons.forEach((btn, index) => {
+      if (index === 0) {
+        btn.classList.add("active")
+      } else {
+        btn.classList.remove("active")
+      }
+    })
   } else {
-    // Show all systems
+    // Show all 14 systems
     systemContents.forEach((content) => content.classList.add("active"))
-    document.querySelectorAll(".system-btn").forEach((btn) => btn.classList.add("active"))
+    systemButtons.forEach((btn) => btn.classList.add("active"))
   }
+
+  // Scroll to systems section
+  systemsSection.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  })
 }
 
 // Animate system metrics
@@ -294,3 +373,32 @@ function animateSystemMetrics(systemType) {
     }, 50)
   })
 }
+
+function optimizeVideoPerformance() {
+  const videos = document.querySelectorAll("video")
+
+  videos.forEach((video) => {
+    // Add loading="lazy" attribute for better performance
+    video.setAttribute("loading", "lazy")
+
+    // Preload metadata only
+    video.setAttribute("preload", "metadata")
+
+    // Add error handling
+    video.addEventListener("error", (e) => {
+      console.log("Video loading error:", e)
+      const placeholder = video.closest(".video-placeholder")
+      if (placeholder) {
+        placeholder.innerHTML = `
+          <div class="video-error p-4 text-center">
+            <i class="bi bi-exclamation-triangle display-4 text-warning"></i>
+            <p class="mt-2">Video content unavailable</p>
+          </div>
+        `
+      }
+    })
+  })
+}
+
+// Initialize video optimizations when page loads
+document.addEventListener("DOMContentLoaded", optimizeVideoPerformance)
